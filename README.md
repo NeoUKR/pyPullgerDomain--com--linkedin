@@ -20,5 +20,5 @@ pyPullgerDomain
 
 > 2. Clone project in foulder pyPullgerDomain/com
 ``` sh
-git clone https://github.com/NeoUKR/pyPullgerDomain--com--linkedin.git linkedin
+  $ git clone https://github.com/NeoUKR/pyPullgerDomain--com--linkedin.git linkedin
 ```
