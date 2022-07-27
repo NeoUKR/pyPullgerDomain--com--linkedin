@@ -12,8 +12,10 @@ pyPullgerDomain
 ``` sh
   $ mkdir pyPullgerDomain
   $ cd pyPullgerDomain
+  $ touch __init__.py
   $ mkdir com
   $ cd com
+  $ touch __init__.py
 ```
 
 > 2. Clone project in foulder pyPullgerDomain/com
