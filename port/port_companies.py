@@ -105,7 +105,7 @@ class CompanyDomain(Root):
         current_url = self.squirrel.current_url
         if current_url != None:
             if self.isPageCompanyOpen():
-                from pyPullgerFootPrint.com.linkedin.company import card
+                from pullgerFootPrint.com.linkedin.company import card
                 pullDATA['nick'] = card.getNick(squirrel = self.squirrel)
                 pullDATA['id'] = card.getID(squirrel = self.squirrel)
 
@@ -208,7 +208,7 @@ class CompanyDomain(Root):
 
         if self.CompanyLoaded != None:
             if self.goToAbout() == True:
-                from pyPullgerFootPrint.com.linkedin.company import card
+                from pullgerFootPrint.com.linkedin.company import card
                 aboutDATA = card.getAboutData(squirrel=self.squirrel)
                 if aboutDATA != None:
                     for keyOfDATA in self.DATA.keys():
