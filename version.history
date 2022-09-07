@@ -1,0 +1,26 @@
+#Vesion history [pullgerDomain.com.linkedin]
+
+
+
+# {0.0.1.0} [pullgerDomain.com.linkedin]
+# - moved the log to a separate file
+# - added requirement file
+
+# {0.0.0.0} [pullgerDomain.com.linkedin]
+# Relations:
+#   PullgerDomain.com.linkedin.port
+#   PullgerFootPrint.com.linkedin
+# Functionality
+# Autorization
+# - standard autorization
+# - pass require phone insertion (PDCL#0010)
+# - mechanisme for pass check
+# LoadPeoples
+#   Exceptions:
+#       unexistingPages (PDCL#0010) (example people: '48c52169-0422-11ed-bc1f-b5c012259935' ,
+#       stop loading people on error
+#       correct check on rendering  (add rule)
+#       fix (add rull) non language links (rewrite some block of code)
+#   Load company Experiance list:
+#       load full experiance
+#       load multi job position in one compani
