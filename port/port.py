@@ -4,7 +4,7 @@ import pullgerSquirrel as squirrel
 from pullgerFootPrint.com.linkedin.search import people as linkedinSearchPeopleFootPrint
 from pullgerFootPrint.com.linkedin.people import card as linkedinPeopleCardFootPrint
 from pullgerFootPrint.com.linkedin import general as linkedinGeneral, authorization as linkedinAuthorizationFootPrint
-from pullgerExceptions import *
+from pullgerExceptions import domain as exceptions
 
 LOGGER_NAME = "pullgerDomain.com.linkedin.port"
 
@@ -67,15 +67,28 @@ class Domain:
             try:
                 if self._squirrel_initialized != None:
                     if self._squirrel.get(url) == False:
-                        raise excDomain_Connect_System(f'Unefine error on create connection to URL:{url}', loggerName=LOGGER_NAME, level=50)
+                        raise exceptions.connect.System(
+                            f'Unefine error on create connection to URL:{url}',
+                            level=50
+                        )
                 else:
-                    raise excDomain_Connect(f'Squirell not initialized!!', loggerName=LOGGER_NAME, level=50)
+                    raise exceptions.connect.General(
+                        f'Squirell not initialized!!',
+                        level=50
+                    )
             except BaseException as e:
-                raise excDomain_Connect_System(f'Cant create connection to URL:{url}.', loggerName=LOGGER_NAME, level=50, exception=e)
+                raise exceptions.connect.System(
+                    f'Cant create connection to URL:{url}.',
+                    level=50,
+                    exception=e
+                )
 
             self._connected = True
         else:
-            raise excDomain_Connect_System(f'Domain not initialized!!', loggerName=LOGGER_NAME, level=50)
+            raise exceptions.connect.System(
+                f'Domain not initialized!!',
+                level=50
+            )
 
     def disconect(self):
         self.close()
@@ -102,17 +115,35 @@ class Domain:
 
                             if self._squirrel.find_XPATH('//div[@id="app__container"]', True) != None:
                                 mainSection = self._squirrel.find_XPATH('.//main')
-                                raise excDomain_Authorization_ResultCheck(f'Authentification error: {mainSection.text}', loggerName=LOGGER_NAME, level=40)
+                                raise exceptions.connect.System(
+                                    f'Authentification error: {mainSection.text}',
+                                    level=40
+                                )
                         else:
-                            raise excDomain_Authorization_InputProcess(f'Incorrect sing in operation.', loggerName=LOGGER_NAME, level=40)
+                            raise exceptions.authorization.InputProcess(
+                                f'Incorrect sing in operation.',
+                                level=40
+                            )
                     else:
-                        raise excDomain_Authorization_InputProcess(f'Incorrect password set on authorization', loggerName=LOGGER_NAME, level=40)
+                        raise exceptions.authorization.InputProcess(
+                            f'Incorrect password set on authorization',
+                            level=40
+                        )
                 else:
-                    raise excDomain_Authorization_InputProcess(f'Incorrect user set on authorization', loggerName=LOGGER_NAME, level=40)
+                    raise exceptions.authorization.InputProcess(
+                        f'Incorrect user set on authorization',
+                        level=40
+                    )
             else:
-                raise excDomain_Authorization(f"No connection to domain", loggerName=LOGGER_NAME, level=50)
+                raise exceptions.authorization.General(
+                    f"No connection to domain",
+                    level=50
+                )
         else:
-            raise excDomain_Authorization(f"Can't do authorization - domain not initialazed", loggerName=LOGGER_NAME, level=50)
+            raise exceptions.authorization.General(
+                f"Can't do authorization - domain not initialazed",
+                level=50
+            )
 
         self._authorizated = True;
 
@@ -211,7 +242,9 @@ class PeopleSubject(Domain):
         # ?trk=public_profile_experience-group-header
         checkCorrection = self.isPageCorrect()
         if checkCorrection != True:
-            raise Exception(checkCorrection)
+            raise exceptions.pages.Incorrect(checkCorrection,
+                level=30
+            )
         time.sleep(1)
 
     def isPageCorrect(self):

@@ -1,6 +1,8 @@
 #Vesion history [pullgerDomain.com.linkedin]
 
 
+# {0.0.2.0} [pullgerDomain.com.linkedin]
+# - refactor code to use external Exception module (pullgerExceptions)
 
 # {0.0.1.0} [pullgerDomain.com.linkedin]
 # - moved the log to a separate file
