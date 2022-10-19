@@ -140,7 +140,7 @@ class CompanyDomain(Root):
             #----
             if self.squirrel.get(url = url, timeout = 30, readyState = 'complete') == True:
             # if self.squirrel.get(url = url, timeout = 30, xpath = '//*[@data-entity-hovercard-id]') == True:
-                if self.isPageCorrect():
+                if self.is_page_correct():
                     self._pullBaseData()
                     result = True
 
@@ -187,7 +187,7 @@ class CompanyDomain(Root):
                     #
                     self.squirrel.get(self.squirrel.current_url + 'about')
                     time.sleep(2)
-                    self.squirrel.updateURL()
+                    self.squirrel.update_url()
                     if self.squirrel.current_url.find('/about') != -1 :
                         result = True;
 
@@ -196,7 +196,7 @@ class CompanyDomain(Root):
                 if url != None:
                     url += 'about/'
                     if self.squirrel.get(url = url, timeout = 30, xpath = '//*[@class="org-top-card-summary-info-list__info-item"]') == True:
-                        if self.isPageCorrect():
+                        if self.is_page_correct():
                             result = True
         else:
             result = True

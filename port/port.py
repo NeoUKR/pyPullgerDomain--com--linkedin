@@ -1,16 +1,15 @@
 import time
-import pullgerSquirrel as squirrel
+import pullgerSquirrel
 
 from pullgerFootPrint.com.linkedin.search import people as linkedinSearchPeopleFootPrint
 from pullgerFootPrint.com.linkedin.people import card as linkedinPeopleCardFootPrint
 from pullgerFootPrint.com.linkedin import general as linkedinGeneral, authorization as linkedinAuthorizationFootPrint
-from pullgerExceptions import domain as exceptions
+from pullgerInternalControl import pIC_pD
 
-LOGGER_NAME = "pullgerDomain.com.linkedin.port"
 
 class Domain:
     __slots__ = (
-        '_authorizated',
+        '_authorized',
         '_connected',
         '_squirrel',
         '_initialized',
@@ -19,33 +18,41 @@ class Domain:
     )
 
     @property
-    def authorizated(self):
-        return self._authorizated
+    def authorized(self):
+        return self._authorized
+
     @property
     def connected(self):
         return self._connected
+
+    @property
+    def squirrel(self):
+        return self._squirrel
+
     @property
     def initialized(self):
         return self._initialized
+
     @property
     def squirrel_initialized(self):
         return self._squirrel_initialized
+
     @property
     def RootLoaded(self):
         return self._RootLoaded
 
-    def __init__(self, sqirrel = None):
-        self._authorizated = False
+    def __init__(self, squirrel: pullgerSquirrel = None):
+        self._authorized = False
         self._connected = False
         self._squirrel = None
         self._initialized = False
         self._squirrel_initialized = False
         self._RootLoaded = None
 
-        if sqirrel == None:
-            self._squirrel = squirrel.Squirrel(squirrel.Connectors.selenium)
+        if squirrel is None:
+            self._squirrel = pullgerSquirrel.Squirrel(pullgerSquirrel.Connectors.selenium)
         else:
-            self._squirrel = sqirrel
+            self._squirrel = squirrel
 
         if self._squirrel.initialized != True:
             self._squirrel.initialize()
@@ -62,22 +69,22 @@ class Domain:
         return newSubject
 
     def connect(self):
-        if self._initialized == True:
+        if self._initialized is True:
             url = 'https://www.linkedin.com/'
             try:
-                if self._squirrel_initialized != None:
-                    if self._squirrel.get(url) == False:
-                        raise exceptions.connect.System(
-                            f'Unefine error on create connection to URL:{url}',
+                if self._squirrel_initialized is not None:
+                    if self._squirrel.get_page(url=url) is False:
+                        raise pIC_pD.connect.System(
+                            f'Undefined error on create connection to URL:{url}',
                             level=50
                         )
                 else:
-                    raise exceptions.connect.General(
-                        f'Squirell not initialized!!',
+                    raise pIC_pD.connect.General(
+                        f'Squirrel not initialized!!',
                         level=50
                     )
             except BaseException as e:
-                raise exceptions.connect.System(
+                raise pIC_pD.connect.System(
                     f'Cant create connection to URL:{url}.',
                     level=50,
                     exception=e
@@ -85,7 +92,7 @@ class Domain:
 
             self._connected = True
         else:
-            raise exceptions.connect.System(
+            raise pIC_pD.connect.System(
                 f'Domain not initialized!!',
                 level=50
             )
@@ -96,64 +103,66 @@ class Domain:
     def close(self):
         self._squirrel.close();
 
-    def authorization(self, inUserName, inPassword):
-        if self._initialized == True:
-            if self._connected != True:
+    def authorization(self, user_name: str, password: str):
+        squirrel = self._squirrel
+
+        if self._initialized is True:
+            if self._connected is not True:
                 self.connect()
 
-            if self._connected == True:
+            if self._connected is True:
                 time.sleep(2)
 
-                if linkedinAuthorizationFootPrint.setUserName(self._squirrel, inUserName) == True:
+                if linkedinAuthorizationFootPrint.set_user_name(squirrel=squirrel, user_name=user_name) is True:
                     time.sleep(1)
 
-                    if linkedinAuthorizationFootPrint.setPassword(self._squirrel, inPassword) == True:
+                    if linkedinAuthorizationFootPrint.set_password(squirrel=squirrel, password=password) is True:
                         time.sleep(1)
 
-                        if linkedinAuthorizationFootPrint.singIn(self._squirrel) == True:
+                        if linkedinAuthorizationFootPrint.sing_in(squirrel=squirrel) is True:
                             time.sleep(5)
 
-                            if self._squirrel.find_XPATH('//div[@id="app__container"]', True) != None:
-                                mainSection = self._squirrel.find_XPATH('.//main')
-                                raise exceptions.connect.System(
-                                    f'Authentification error: {mainSection.text}',
+                            if self.squirrel.find_xpath(xpath="//div[@id='app__container']") is not None:
+                                mainSection = self.squirrel.find_xpath('.//main')
+                                raise pIC_pD.connect.System(
+                                    f'Authentication error: {mainSection.text}',
                                     level=40
                                 )
                         else:
-                            raise exceptions.authorization.InputProcess(
+                            raise pIC_pD.authorization.InputProcess(
                                 f'Incorrect sing in operation.',
                                 level=40
                             )
                     else:
-                        raise exceptions.authorization.InputProcess(
+                        raise pIC_pD.authorization.InputProcess(
                             f'Incorrect password set on authorization',
                             level=40
                         )
                 else:
-                    raise exceptions.authorization.InputProcess(
+                    raise pIC_pD.authorization.InputProcess(
                         f'Incorrect user set on authorization',
                         level=40
                     )
             else:
-                raise exceptions.authorization.General(
+                raise pIC_pD.authorization.General(
                     f"No connection to domain",
                     level=50
                 )
         else:
-            raise exceptions.authorization.General(
-                f"Can't do authorization - domain not initialazed",
+            raise pIC_pD.authorization.General(
+                f"Can't do authorization - domain not initialized",
                 level=50
             )
 
-        self._authorizated = True;
+        self._authorized = True
 
-    def isPageCorrect(self):
+    def is_page_correct(self):
         isError = False
 
-        errorSection = self.squirrel.find_XPATH('//section[@class="global-error artdeco-empty-state ember-view"]')
-        if errorSection != None: isError = True;
+        errorSection = self.squirrel.find_xpath('//section[@class="global-error artdeco-empty-state ember-view"]')
+        if errorSection is not None: isError = True
 
-        if isError == False:
+        if isError is False:
             splitedURL = list(filter(None, self.squirrel.current_url.split('/')))
             if not (splitedURL[2] == 'company' or splitedURL[2] == 'school'): isError = True
 
@@ -194,9 +203,9 @@ class Domain:
     def listOfPeopleNext(self):
         result = None;
 
-        self._squirrel.send_PAGE_DOWN()
+        self._squirrel.send_page_down()
         time.sleep(1)
-        self._squirrel.send_PAGE_DOWN()
+        self._squirrel.send_page_down()
         time.sleep(1)
 
         CurPagination = linkedinSearchPeopleFootPrint.getNumberCurentPaginationPage(self._squirrel)
@@ -216,21 +225,22 @@ class Domain:
 
             return objPeople
 
+
 class PeopleSubject(Domain):
     id = None
     nick = None
 
     def __init__(self, childrenClassObject):
-        self._authorizated = childrenClassObject._authorizated
+        self._authorized = childrenClassObject._authorized
         self._connected = childrenClassObject._connected
         self._squirrel = childrenClassObject._squirrel
         self._squirrel_initialized = childrenClassObject._squirrel_initialized
         self._RootLoaded = childrenClassObject._RootLoaded
 
     def getPage(self):
-        if self._authorizated == True:
+        if self._authorized is True:
             prefix = 'www'
-            if self.nick != None:
+            if self.nick is not None:
                 identificator = self.nick;
             else:
                 identificator = self.id;
@@ -240,25 +250,26 @@ class PeopleSubject(Domain):
         time.sleep(1)
         self._squirrel.get(f'https://{prefix}.linkedin.com/in/{identificator}')
         # ?trk=public_profile_experience-group-header
-        checkCorrection = self.isPageCorrect()
-        if checkCorrection != True:
-            raise exceptions.pages.Incorrect(checkCorrection,
+        checkCorrection = self.is_page_correct()
+        if checkCorrection is not True:
+            raise pIC_pD.pages.Incorrect(
+                msg=checkCorrection,
                 level=30
             )
         time.sleep(1)
 
-    def isPageCorrect(self):
+    def is_page_correct(self):
         isNoError = True
 
-        if self._authorizated == False:
-            errorSection = self._squirrel.find_XPATH('//section[@class="profile"]')
+        if self._authorized is False:
+            errorSection = self._squirrel.find_xpath('//section[@class="profile"]')
         else:
-            errorSection = self._squirrel.find_XPATH('//section[@class="artdeco-card ember-view pv-top-card"]')
+            errorSection = self._squirrel.find_xpath('//section[@class="artdeco-card ember-view pv-top-card"]')
 
         if errorSection == None:
             markerCkeckpoint = self._squirrel.current_url.find('checkpoint')
             if markerCkeckpoint != -1:
-                isNoError = True;
+                isNoError = True
 
             else:
                 isNoError = 'incorrect page';
@@ -267,7 +278,7 @@ class PeopleSubject(Domain):
 
     @staticmethod
     def getCleanedURL(url):
-        return linkedinGeneral.getCleanedURL(url)
+        return linkedinGeneral.get_cleaned_url(url)
 
     @staticmethod
     def checkNick(nick):
@@ -277,14 +288,14 @@ class PeopleSubject(Domain):
     def getNickFromURL(url):
         return linkedinGeneral.getNickFromURL(url)
 
-    def getListOfExperience(self):
+    def get_list_of_experience(self):
         self._squirrel.get(f'{self._squirrel.current_url}details/experience/')
 
         time.sleep(2)
-        self._squirrel.send_PAGE_DOWN()
+        self._squirrel.send_page_down()
         time.sleep(1)
-        self._squirrel.send_PAGE_DOWN()
+        self._squirrel.send_page_down()
         time.sleep(1)
-        self._squirrel.send_END()
+        self._squirrel.send_end()
         time.sleep(1)
-        return linkedinPeopleCardFootPrint.getListOfExperience(self._squirrel);
+        return linkedinPeopleCardFootPrint.get_list_of_experience(self._squirrel);
