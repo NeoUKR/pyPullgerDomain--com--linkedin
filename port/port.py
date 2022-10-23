@@ -1,9 +1,16 @@
 import time
+import importlib
+
 import pullgerSquirrel
 
 from pullgerFootPrint.com.linkedin.search import people as linkedinSearchPeopleFootPrint
 from pullgerFootPrint.com.linkedin.people import card as linkedinPeopleCardFootPrint
-from pullgerFootPrint.com.linkedin import general as linkedinGeneral, authorization as linkedinAuthorizationFootPrint
+from pullgerFootPrint.com.linkedin import general as linkedinGeneral
+# from pullgerFootPrint.com.linkedin import authorization
+# from pullgerFootPrint.com.linkedin import authorization as linkedinAuthorizationFootPrint
+
+from . import port_functions
+
 from pullgerInternalControl import pIC_pD
 
 
@@ -104,57 +111,8 @@ class Domain:
         self._squirrel.close();
 
     def authorization(self, user_name: str, password: str):
-        squirrel = self._squirrel
-
-        if self._initialized is True:
-            if self._connected is not True:
-                self.connect()
-
-            if self._connected is True:
-                time.sleep(2)
-
-                if linkedinAuthorizationFootPrint.set_user_name(squirrel=squirrel, user_name=user_name) is True:
-                    time.sleep(1)
-
-                    if linkedinAuthorizationFootPrint.set_password(squirrel=squirrel, password=password) is True:
-                        time.sleep(1)
-
-                        if linkedinAuthorizationFootPrint.sing_in(squirrel=squirrel) is True:
-                            time.sleep(5)
-
-                            if self.squirrel.find_xpath(xpath="//div[@id='app__container']") is not None:
-                                mainSection = self.squirrel.find_xpath('.//main')
-                                raise pIC_pD.connect.System(
-                                    f'Authentication error: {mainSection.text}',
-                                    level=40
-                                )
-                        else:
-                            raise pIC_pD.authorization.InputProcess(
-                                f'Incorrect sing in operation.',
-                                level=40
-                            )
-                    else:
-                        raise pIC_pD.authorization.InputProcess(
-                            f'Incorrect password set on authorization',
-                            level=40
-                        )
-                else:
-                    raise pIC_pD.authorization.InputProcess(
-                        f'Incorrect user set on authorization',
-                        level=40
-                    )
-            else:
-                raise pIC_pD.authorization.General(
-                    f"No connection to domain",
-                    level=50
-                )
-        else:
-            raise pIC_pD.authorization.General(
-                f"Can't do authorization - domain not initialized",
-                level=50
-            )
-
-        self._authorized = True
+        importlib.reload(port_functions)
+        port_functions.authorization(self, user_name, password)
 
     def is_page_correct(self):
         isError = False

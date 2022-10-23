@@ -1,5 +1,11 @@
 Version history [pullgerDomain.com.linkedin]
 
+{0.0.5.0}
+ - fixed occurred error on several authorization on one session
+
+{0.0.4.0}
+ - made authorization execution with reload
+
 {0.0.3.0}
  - bring code to PEP8 standards
  - migrate code to use pullgerInternalControl to replace pullgerExceptions
