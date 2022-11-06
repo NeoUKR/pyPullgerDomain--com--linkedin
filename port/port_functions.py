@@ -27,20 +27,14 @@ def authorization(self, user_name: str, password: str):
             fp_authorization.set_password(squirrel=squirrel, password=password)
             time.sleep(1)
 
-            # TODO Convert to rise model call
-            if fp_authorization.sing_in(squirrel=squirrel) is True:
-                time.sleep(5)
+            fp_authorization.sing_in(squirrel=squirrel)
+            time.sleep(5)
 
-                if self.squirrel.find_xpath(xpath="//div[@id='app__container']") is not None:
-                    mainSection = self.squirrel.find_xpath('.//main')
-                    raise pIC_pD.connect.System(
-                        f'Authentication error: {mainSection.text}',
-                        level=40
-                    )
-            else:
-                raise pIC_pD.authorization.InputProcess(
-                    f'Incorrect sing in operation.',
-                    level=30
+            if self.squirrel.find_xpath(xpath="//div[@id='app__container']") is not None:
+                mainSection = self.squirrel.find_xpath('.//main')
+                raise pIC_pD.connect.System(
+                    f'Authentication error: {mainSection.text}',
+                    level=40
                 )
         else:
             raise pIC_pD.authorization.General(
